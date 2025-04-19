@@ -15,8 +15,7 @@ My goal is to use data to shed light on the current state of housing policy in A
 With a PhD in real estate finance from the University of California at Berkeley, a textbook in progress, and a passion for making complex policy issues accessible, I aim to spark fresh conversations about housing solutions. If you enjoy housing debates, bad zoning laws, or just a good paradox, you’re in the right place.  
 
 ## Articles on Medium  
-📝 **[The Housing Catch – More Vacant Homes Than Housing Needs?](#)** *(First article in the series)*  
-🔜 **A Deep Dive into Proposition M** *(Exploring large-scale public leasing solutions)*  
+-- [**The Housing Catch – More Vacant Homes Than Households in Need?**](https://medium.com/@pratish143/the-housing-catch-more-vacant-homes-than-households-in-need-7017fe4f4e41)
 
 ## How to Use This Repo  
 - Browse the articles and datasets  
