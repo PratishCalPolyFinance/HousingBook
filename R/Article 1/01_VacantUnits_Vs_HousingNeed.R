@@ -55,7 +55,7 @@ final_data <- inner_join(vacancy_data, housing_data, by = "CountyName")
 
 # Load and simplify shapefile for CA counties
 ca_counties <- st_read(here("img", "Counties.shp")) %>%
-  rmapshaper::ms_simplify(keep = 0.05)
+  rmapshaper::ms_simplify(keep = 0.2)
 
 # Merge spatial data with final dataset
 ca_map <- inner_join(ca_counties, final_data, by = "CountyName") %>%
@@ -98,16 +98,16 @@ ggplot(ca_map) +
   geom_text(data = ca_centroids, aes(x = x, y = y, label = CountyName), size = 3, family = "fira", color = "white", check_overlap = TRUE) +
   geom_text(data = filter(ca_centroids, outlier), aes(x = x, y = y, label = CountyName), size = 4, family = "fira", fontface = "bold", color = "black", check_overlap = TRUE) +
   geom_sf(data = sf_county, fill = NA, color = "black", size = 1) +
-  annotate("text", x = sf_x - 2, y = sf_y + 1, label = "SF", size = 12, color = "black", family = "fira", hjust = 1.5) +
+  annotate("text", x = sf_x - 2, y = sf_y + 1, label = "SF", size = 5, color = "black", family = "fira", hjust = 1.5) +
   labs(
-    title = "Empty Homes, Big Needs: A County-Level Look at California’s Housing Gap",
-    subtitle = "Counties where vacant homes exceed 200% of affordable housing needs are <span style='color:black'>colored in black</span>.",
-    caption = "Sources: US Census Bureau (vacant units), CHPC Housing Need Reports (housing need) - https://chpc.net/publications/housing-need-reports/.",
+    title = "County-Level Look at California’s Housing Gap",
+    #subtitle = "Counties where vacant homes exceed 200% of affordable housing needs are <span style='color:black'>colored in black</span>.",
+    #caption = "Sources: US Census Bureau (vacant units), CHPC Housing Need Reports (housing need) - https://chpc.net/publications/housing-need-reports/.",
     fill = "Vacancy/Rent Ratio"
   ) +
   theme_void(base_family = "fira") +
   theme(
-    plot.title = element_text(size = 22, face = "bold", hjust = 0.5),
+    plot.title = element_text(size = 20, face = "bold", hjust = 0,vjust = 2.3),
     plot.subtitle = element_text(size = 16, color = "grey40", hjust = 0.5),
     plot.caption = element_text(size = 10, color = "grey50", hjust = 0.5),
     legend.position = "right"
@@ -129,21 +129,31 @@ waterfall_data <- final_data %>%
   pivot_longer(cols = everything(), names_to = "category", values_to = "value")
 
 total_vacant <- sum(waterfall_data$value, na.rm = TRUE)
+num_cats <- nrow(waterfall_data)
 
 ggplot(waterfall_data, aes(x = reorder(category, value), y = value, fill = category)) +
-  geom_col(width = 0.6, color = "black", alpha = 0.9) +
-  geom_text(aes(label = scales::comma(value)), size = 5, fontface = "bold", color = "white", hjust = 1.2) +
+  geom_col(width = 0.9, color = "white", alpha = 0.9) +
+  geom_text(aes(label = scales::comma(value)), size = 5, fontface = "bold", color = "white", hjust = 1.05) +
   scale_fill_manual(values = okabe_ito_colors) +
   labs(
     title = "Breakdown of Vacant Units",
-    subtitle = "Stepwise decomposition of total vacant units by category",
-    caption = "Sources: US Census Bureau (vacant units), CHPC Housing Need Reports (housing need) - https://chpc.net/publications/housing-need-reports/."
+    #subtitle = "Stepwise decomposition of total vacant units by category",
+    #caption = "Sources: US Census Bureau (vacant units), CHPC Housing Need Reports (housing need) - https://chpc.net/publications/housing-need-reports/."
   ) +
   coord_flip() +
-  theme_minimal(base_size = 14) +
+  theme_minimal(base_size = 20) +
   theme(
     plot.title = element_text(size = 22, face = "bold", hjust = 0.5),
     plot.subtitle = element_text(size = 16, color = "gray40", hjust = 0.5),
     plot.caption = element_text(size = 10, color = "grey50", hjust = 0.5),
-    legend.position = "none"
-  )
+    legend.position = "none",
+    axis.text = element_text(size = 15, face = "bold"), # Adjust axis text size
+    axis.text.x = element_blank(),
+    axis.title.x = element_blank(),
+    axis.title.y = element_blank(),
+    plot.title.position = "plot",
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank()
+  )+
+  # Add vertical (visually) dividers between bars
+  geom_hline(yintercept = seq(1.5, num_cats - 0.5, by = 1), color = "black", linewidth = 0.3)
