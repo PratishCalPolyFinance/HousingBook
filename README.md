@@ -16,6 +16,7 @@ With a PhD in real estate finance from the University of California at Berkeley,
 
 ## Articles on Medium  
 1.  [**The Housing Catch – More Vacant Homes Than Households in Need?**](https://medium.com/@pratish143/the-housing-catch-more-vacant-homes-than-households-in-need-7017fe4f4e41)
+2.  [**You can’t house people if the people with houses are opting out.**](https://medium.com/@pratish143/you-cant-house-people-if-the-people-with-houses-are-opting-out-75de366fc342)
 
 ## How to Use This Repo  
 - Browse the articles and datasets  
