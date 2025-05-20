@@ -17,8 +17,6 @@ With a PhD in real estate finance from the University of California at Berkeley,
 ## Articles on Medium  
 1.  [**The Housing Catch – More Vacant Homes Than Households in Need?**](https://medium.com/@pratish143/the-housing-catch-more-vacant-homes-than-households-in-need-7017fe4f4e41)
 2.  [**You can’t house people if the people with houses are opting out.**](https://medium.com/@pratish143/you-cant-house-people-if-the-people-with-houses-are-opting-out-75de366fc342)
-3.  [**The Hidden Flaw in America’s Largest Rental Assistance Program.**](https://medium.com/p/cc0b850b6357)
-4.  [**Opting Out of Choice: What Ten Years of Data Say About the Section 8 Stall.**](https://medium.com/p/54e4162528e1)
 
 ## How to Use This Repo  
 - Browse the articles and datasets  
