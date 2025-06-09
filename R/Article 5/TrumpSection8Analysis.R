@@ -189,7 +189,6 @@ centroids_movein <- as.data.frame(centroids_coords_movein) %>%
     id_long = str_wrap(df_phv_hex_movein$google_name, 12)
   )
 
-# Build the map using scale_fill_gradientn
 hex_phv_movein <- ggplot(df_phv_hex_movein) +
   geom_sf(aes(fill = months_from_movein), color = "white") +
   geom_text(data = centroids_movein,
@@ -201,23 +200,31 @@ hex_phv_movein <- ggplot(df_phv_hex_movein) +
             family = "Montserrat",
             color = "grey30",
             fontface = "bold",
-            size = 3,
+            size = 2,
             lineheight = 0.8,
             vjust = 1) +
   scale_fill_gradientn(
-    colors = okabe_ito_colors[1:8],
+    colors = okabe_ito_colors[1:4],
     name = "Months Since Move-In",
     limits = quantile(df_phv_hex_movein$months_from_movein, c(0.05, 0.95), na.rm = TRUE),
     oob = scales::squish
   ) +
-  ggtitle("How Long Have Residents Been in Place?\nAverage Months Since Move-In by State") +
+  labs(
+    title = "How Long Have Voucher Residents Stayed Put?",
+    subtitle = "North Dakota shows the shortest average tenure at 70 months; some states exceed 10 years.",
+    caption = "Source: HUD Picture of Subsidized Households, 2024"
+  ) +
   theme_void() +
   theme(
     legend.position = "bottom",
     legend.title = element_text(face = "bold"),
-    plot.title = element_text(size = 22, face = "bold", hjust = 0),
+    legend.key.width = unit(3, "cm"),
+    plot.title = element_text(size = 24, face = "bold", hjust = 0),
+    plot.subtitle = element_text(size = 14, face = "italic", hjust = 0),
+    plot.caption = element_text(size = 10, hjust = 0),
     plot.title.position = "plot"
   )
+
 
 # --- Display the map ---
 print(hex_phv_movein)
@@ -231,7 +238,6 @@ ggsave(
   units = "in",
   device = "jpeg"
 )
-
 
 
 
@@ -255,4 +261,81 @@ PHV_abawd_state <- PHV_data %>%
   ) %>%
   unnest(out) %>%
   ungroup()
+
+PHV_abawd_state <- PHV_abawd_state %>%
+  mutate(ISO2 = substr(name, 1, 2))
+
+
+# Merge into hex grid
+df_abawd_hex <- map_hex_sf %>%
+  left_join(df_states, by = c("id" = "state")) %>%
+  left_join(PHV_abawd_state, by = c("id" = "ISO2"))
+
+# Compute centroids
+centroids_abawd <- st_centroid(df_abawd_hex)
+centroids_coords_abawd <- st_coordinates(centroids_abawd)
+centroids_abawd <- as.data.frame(centroids_coords_abawd) %>%
+  mutate(
+    id = df_abawd_hex$id,
+    id_long = stringr::str_wrap(df_abawd_hex$google_name, 12)
+  )
+
+# Define percentile limits
+lower_limit <- quantile(df_abawd_hex$abawd_prob_upper, 0.05, na.rm = TRUE)
+upper_limit <- quantile(df_abawd_hex$abawd_prob_upper, 0.95, na.rm = TRUE)
+
+# Plot the map
+hex_abawd_prob <- ggplot(df_abawd_hex) +
+  geom_sf(aes(fill = abawd_prob_upper), color = "white") +
+  geom_text(data = centroids_abawd,
+            aes(x = X, y = Y + 0.35, label = id),
+            family = "Montserrat",
+            fontface = "bold") +
+  geom_text(data = centroids_abawd,
+            aes(x = X, y = Y - 0.3, label = id_long),
+            family = "Montserrat",
+            color = "grey30",
+            fontface = "bold",
+            size = 2,
+            lineheight = 0.8,
+            vjust = 1) +
+  scale_fill_gradientn(
+    colors = okabe_ito_colors[1:4],
+    name = "ABAWD Upper Bound",
+    limits = c(0.20, 0.45),
+    breaks = seq(0.20, 0.45, by = 0.05),
+    labels = scales::label_percent(accuracy = 1),
+    oob = scales::squish
+  ) +
+  labs(
+    title = "Where the Rules Will Bite Hardest",
+    subtitle = "Estimated Upper Bound of Able-Bodied Adults Without Dependents in HCV Households",
+    caption = "Source: HUD Picture of Subsidized Households, 2024"
+  ) +
+  theme_void() +
+  theme(
+    legend.position = "bottom",
+    legend.title = element_text(face = "bold", size = 11),
+    legend.text = element_text(size = 10),
+    legend.key.width = unit(3, "cm"),
+    plot.title = element_text(size = 22, face = "bold", hjust = 0),
+    plot.subtitle = element_text(size = 14, face = "italic", hjust = 0),
+    plot.caption = element_text(size = 10, hjust = 0),
+    plot.title.position = "plot"
+  )
+
+# Display the map
+print(hex_abawd_prob)
+
+# Save plot as 1280px wide JPEG
+ggsave(
+  filename = here::here("plots", "UpperBound_plot_2024.jpg"),
+  width = 1280 / 96,   # Convert pixels to inches (assuming 96 dpi)
+  height = 800 / 96,   # You can adjust the height for aspect ratio
+  dpi = 96,
+  units = "in",
+  device = "jpeg"
+)
+
+
 
